@@ -1,4 +1,5 @@
 package com.unknown.repository.impl;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -7,24 +8,22 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
+
 import com.unknown.mapper.IRowMapper;
 
 /**
  * 
- * @author TruongNguyen
- * Khi dung @value thì phải có component(yêu cầu bắt buộc của spring)
- * và phải có @Autowired để khởi tạo đối tượng trong bean
- * Khởi tạo là chạy từ đầu class đến cuối class chỗ nào cần gán
- * giá trị thì gán.
- * Ví dụ:
- * @Value("${spring.datasource.url}")
- * private String URL;
- * Còn khởi tạo vùng nhớ (new) là chỉ cấp phát vùng nhớ chứ không
- * khởi tạo đối tượng dẫn đến những thuộc tính cần lấy giá trị sẽ
- * không bị null vì không lấy đc giá trị để gán.
+ * @author TruongNguyen Khi dung @value thì phải có component(yêu cầu bắt buộc
+ *         của spring) và phải có @Autowired để khởi tạo đối tượng trong bean
+ *         Khởi tạo là chạy từ đầu class đến cuối class chỗ nào cần gán giá trị
+ *         thì gán. Ví dụ: @Value("${spring.datasource.url}") private String
+ *         URL; Còn khởi tạo vùng nhớ (new) là chỉ cấp phát vùng nhớ chứ không
+ *         khởi tạo đối tượng dẫn đến những thuộc tính cần lấy giá trị sẽ không
+ *         bị null vì không lấy đc giá trị để gán.
  */
 @Component
 @PropertySource("classpath:application.properties")
@@ -32,11 +31,15 @@ public class DataProviderRepository {
 
 	@Value("${spring.datasource.url}")
 	private String URL;
+	@Value("${spring.datasource.username}")
+	private String userName;
+	@Value("${spring.datasource.password}")
+	private String password;
 	private Connection connect;
 	private PreparedStatement pstmt;
 	private ResultSet dataResult;
 
-	public DataProviderRepository(){
+	public DataProviderRepository() {
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 			connect = null;
@@ -46,11 +49,11 @@ public class DataProviderRepository {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public <T> List<T> executeQuery(String query, IRowMapper<T> rowMapper, Object[] parameter) {
 		List<T> convertResult = new ArrayList<>();
 		try {
-			this.connect = DriverManager.getConnection(URL);
+			this.connect = DriverManager.getConnection(URL, userName, password);
 			this.pstmt = connect.prepareStatement(query);
 			if (parameter != null) {
 				for (int i = 0; i < parameter.length; ++i) {

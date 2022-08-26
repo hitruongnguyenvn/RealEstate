@@ -19,10 +19,10 @@ public class AreaEntity {
 	@Column(name = "floor")
 	private Integer floor;
 
-	@Column(name = "area")
+	@Column(name = "area", nullable = true)
 	private String area;
 
-	@Column(name = "status")
+	@Column(name = "status", nullable = true)
 	private Integer status;
 
 	@Column(name = "price")
@@ -31,12 +31,17 @@ public class AreaEntity {
 	@Column(name = "deposit")
 	private Double deposit;
 
-	@Column(name = "buildingId")
-	private Integer buildingId;
-	
+	@Column(name = "decorateTime")
+	private Double decorateTime;
+
 	@ManyToOne
-	@JoinColumn(name = "buildingIdd")
+	@JoinColumn(name = "buildingId", nullable = true)
 	private BuildingEntity buildingEntity;
+
+	public AreaEntity() {
+		super();
+		this.setBuildingEntity(new BuildingEntity());
+	}
 
 	public Integer getId() {
 		return id;
@@ -86,11 +91,27 @@ public class AreaEntity {
 		this.deposit = deposit;
 	}
 
+	public Double getDecorateTime() {
+		return decorateTime;
+	}
+
+	public void setDecorateTime(Double decorateTime) {
+		this.decorateTime = decorateTime;
+	}
+
+	public BuildingEntity getBuildingEntity() {
+		return buildingEntity;
+	}
+
+	public void setBuildingEntity(BuildingEntity buildingEntity) {
+		this.buildingEntity = buildingEntity;
+	}
+
 	public Integer getBuildingId() {
-		return buildingId;
+		return this.buildingEntity.getId();
 	}
 
 	public void setBuildingId(Integer buildingId) {
-		this.buildingId = buildingId;
-	}	
+		this.buildingEntity.setId(buildingId);
+	}
 }

@@ -1,6 +1,6 @@
 package com.unknown.entity;
 
-public class CityEntity {
+public class BuildingTypeEntity {
 
 	private Integer id;
 

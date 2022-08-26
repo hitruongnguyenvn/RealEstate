@@ -1,4 +1,5 @@
 package com.unknown.repository.impl;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -7,6 +8,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.unknown.custom.exception.CustomSQLException;
 import com.unknown.mapper.IRowMapper;
 
 public class DataProvider {
@@ -16,6 +19,7 @@ public class DataProvider {
 	private static Connection connect;
 	private static PreparedStatement pstmt;
 	private static ResultSet dataResult;
+
 	private DataProvider() {
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -26,7 +30,7 @@ public class DataProvider {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static DataProvider getInstance() {
 		if (DataProvider.instance == null) {
 			DataProvider.instance = new DataProvider();
@@ -50,7 +54,7 @@ public class DataProvider {
 			}
 			return convertResult;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new CustomSQLException(e.getMessage());
 		} finally {
 			try {
 				if (dataResult != null) {
@@ -66,7 +70,6 @@ public class DataProvider {
 				e.printStackTrace();
 			}
 		}
-		return convertResult;
 	}
 
 	public Integer executeNonQuery(String query, Object[] parameter) {
@@ -92,7 +95,7 @@ public class DataProvider {
 				try {
 					DataProvider.connect.rollback();
 				} catch (SQLException e1) {
-					e1.printStackTrace();
+					throw new CustomSQLException(e1.getMessage());
 				}
 			}
 		} finally {
@@ -107,7 +110,7 @@ public class DataProvider {
 					DataProvider.connect.close();
 				}
 			} catch (SQLException e) {
-				e.printStackTrace();
+				throw new CustomSQLException(e.getMessage());
 			}
 		}
 		return data;
@@ -126,7 +129,7 @@ public class DataProvider {
 			data = DataProvider.pstmt.executeQuery().next();
 			return data;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new CustomSQLException(e.getMessage());
 		} finally {
 			try {
 				if (DataProvider.dataResult != null) {
@@ -142,7 +145,6 @@ public class DataProvider {
 				e.printStackTrace();
 			}
 		}
-		return data;
 	}
 
 	public int count(String query, Object[] parameter) {
@@ -161,7 +163,7 @@ public class DataProvider {
 			}
 			return data;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new CustomSQLException(e.getMessage());
 		} finally {
 			try {
 				if (DataProvider.dataResult != null) {
@@ -174,9 +176,8 @@ public class DataProvider {
 					DataProvider.connect.close();
 				}
 			} catch (SQLException e) {
-				e.printStackTrace();
+				throw new CustomSQLException(e.getMessage());
 			}
 		}
-		return data;
 	}
 }

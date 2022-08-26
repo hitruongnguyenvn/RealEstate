@@ -7,93 +7,53 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.unknown.converter.AreaConverter;
+import com.unknown.converter.BuildingConverter;
 import com.unknown.entity.AreaEntity;
 import com.unknown.entity.BuildingEntity;
-import com.unknown.entity.CityEntity;
-import com.unknown.entity.DistrictEntity;
+import com.unknown.model.response.AreaResponse;
+import com.unknown.model.response.BuildingResponse;
 import com.unknown.model.response.BuildingSearchResponse;
-import com.unknown.repository.IAreaRepository;
 import com.unknown.repository.IBuildingRepository;
-import com.unknown.repository.ICityRepository;
-import com.unknown.repository.IDistrictRepository;
 import com.unknown.service.IBuildingService;
 
 @Service
 public class BuildingService implements IBuildingService {
 	@Autowired
 	private IBuildingRepository buildingRepository;
+
 	@Autowired
-	private IAreaRepository areaRepository;
+	private BuildingConverter buildingConverter;
 	@Autowired
-	private IDistrictRepository districtRepository;
-	@Autowired
-	private ICityRepository cityRepository;
+	private AreaConverter areaConverter;
 
 	@Override
-	public List<BuildingSearchResponse> findAll(Map<String, String> params, List<String> buildingTypes) {
+	public List<BuildingSearchResponse> findAll(Map<String, Object> params, List<String> buildingTypes) {
 		List<BuildingEntity> buildingEntities = buildingRepository.findAll(params, buildingTypes);
 		List<BuildingSearchResponse> results = new ArrayList<>();
-		int size = buildingEntities.size();
-		for (int i = 0; i < size; ++i) {
+		for (BuildingEntity item : buildingEntities) {
+			// User JDBC
+			// BuildingSearchResponse buildingSearchResponse =
+			// buildingConverter.convertEntityToSearchResponse(item,params);
 			BuildingSearchResponse buildingSearchResponse = new BuildingSearchResponse();
-			DistrictEntity districtEntity = districtRepository.findById(buildingEntities.get(i).getDistrictId());
-			CityEntity cityEntity = cityRepository.findById(districtEntity.getCityId());
-			buildingSearchResponse.setId(buildingEntities.get(i).getId());
-			buildingSearchResponse.setName(buildingEntities.get(i).getName());
-			buildingSearchResponse.setAddress(buildingEntities.get(i).getStreet() + " - " + buildingEntities.get(i).getWard() + " - "
-					+ districtEntity.getName() + " - " + cityEntity.getName());
-			buildingSearchResponse.setDiscribe(buildingEntities.get(i).getDiscribe());
-			buildingSearchResponse.setManagerName(buildingEntities.get(i).getManagerName());
-			buildingSearchResponse.setManagerPhoneNumber(buildingEntities.get(i).getManagerPhoneNumber());
-			buildingSearchResponse.setNumberOfBasement(buildingEntities.get(i).getNumberOfBasement());
-			List<AreaEntity> areaEntities = areaRepository.findByBuildingId(params, buildingEntities.get(i).getId());
-			int sizeArea = areaEntities.size();
-			int prev = 0;
-			boolean check = false;
-			if (sizeArea > 0) {
-				prev = areaEntities.get(0).getFloor();
-			}
-			for (int j = 0; j < sizeArea; ++j) {
-				StringBuilder builder = new StringBuilder();
-				if (prev == areaEntities.get(j).getFloor()) {
-					if (areaEntities.get(j).getStatus() == 1) {
-						check = true;
-						builder.append("Tầng: " + areaEntities.get(j).getFloor());
-						builder.append(" - Diện Tích: " + areaEntities.get(j).getArea() + " (Đã thuê)");
-						buildingSearchResponse.getAreaEmpty().add(builder.toString());
-					} else {
-						builder.append("Tầng: " + areaEntities.get(j).getFloor());
-						builder.append(" - Diện Tích: " + areaEntities.get(j).getArea() + " (Chưa thuê)");
-						buildingSearchResponse.getAreaEmpty().add(builder.toString());
-						if (sizeArea == 1) {
-							buildingSearchResponse.getFloorEmpty().add("Tầng: " + prev);
-						}
-					}
-				} else {
-					if (check == false) {
-						buildingSearchResponse.getFloorEmpty().add("Tầng: " + prev);
-					}
-					check = false;
-					prev = areaEntities.get(j).getFloor();
-					if (areaEntities.get(j).getStatus() == 1) {
-						check = true;
-						builder.append("Tầng: " + areaEntities.get(j).getFloor());
-						builder.append(" - Diện Tích: " + areaEntities.get(j).getArea() + " (Đã thuê)");
-						buildingSearchResponse.getAreaEmpty().add(builder.toString());
-					} else {
-						builder.append("Tầng: " + areaEntities.get(j).getFloor());
-						builder.append(" - Diện Tích: " + areaEntities.get(j).getArea() + " (Chưa thuê)");
-						buildingSearchResponse.getAreaEmpty().add(builder.toString());
-						if (j == (sizeArea - 1)) {
-							buildingSearchResponse.getFloorEmpty().add("Tầng: " + prev);
-						}
-					}
-
-				}
-			}
+			buildingSearchResponse.setName(item.getName());
 			results.add(buildingSearchResponse);
 		}
 		return results;
+	}
+
+	@Override
+	public BuildingResponse findById(Integer id) {
+		return null;
+	}
+
+	@Override
+	public List<AreaResponse> findAreaByBuildingId(Integer buildingId) {
+		BuildingEntity buildingEntity = buildingRepository.findById(buildingId);
+		List<AreaEntity> areaEntities = buildingEntity.getAreaEnties();
+		List<AreaResponse> result = new ArrayList<>();
+		areaEntities.stream().forEach(item -> result.add(areaConverter.convertEntityToResponse(item)));
+		return result;
 	}
 
 }

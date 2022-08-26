@@ -6,6 +6,7 @@ import java.util.Map;
 import com.unknown.entity.AreaEntity;
 
 public interface IAreaRepository {
-	public List<AreaEntity> findByBuildingId(Map<String, String> params, Integer buildingId);
-	public String joinCondition(Map<String, String> params);
+	public List<AreaEntity> findByBuildingId(Map<String, Object> params, Integer buildingId);
+
+	public String joinCondition(Map<String, Object> params);
 }

@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -13,12 +14,15 @@ public class RoleEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	
+
 	@Column(name = "name", nullable = true)
 	private String name;
-	
+
 	@Column(name = "Code", nullable = false, unique = true)
 	private String Code;
+
+	@OneToOne(mappedBy = "roleEntity")
+	private UsersEntity usersEntity;
 
 	public Integer getId() {
 		return id;
@@ -42,6 +46,14 @@ public class RoleEntity {
 
 	public void setCode(String code) {
 		Code = code;
+	}
+
+	public UsersEntity getUsersEntity() {
+		return usersEntity;
+	}
+
+	public void setUsersEntity(UsersEntity usersEntity) {
+		this.usersEntity = usersEntity;
 	}
 
 }
