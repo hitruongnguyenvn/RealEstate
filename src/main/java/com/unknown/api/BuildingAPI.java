@@ -5,59 +5,69 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.unknown.custom.exception.FieldNotFoundException;
-import com.unknown.model.request.BuildingAssignmentRequest;
-import com.unknown.model.request.BuildingRequest;
-import com.unknown.model.response.BuildingResponse;
+import com.unknown.model.request.BuildingSearchRequest;
+import com.unknown.model.request.BuildingUpdateRequest;
+import com.unknown.model.request.UsersBuildingRequest;
 import com.unknown.model.response.BuildingSearchResponse;
-import com.unknown.service.IBuildingService;
+import com.unknown.model.response.BuildingUpdateResponse;
+import com.unknown.service.BuildingService;
+import com.unknown.validation.BuildingValidator;
 
-@RestController
+@RestController(value = "apiBuilding")
 @RequestMapping("/api/building")
 public class BuildingAPI {
 
 	@Autowired
-	private IBuildingService buildingService;
+	private BuildingService buildingService;
 
 	@GetMapping
 	public List<BuildingSearchResponse> findAll(@RequestParam Map<String, Object> requestParams,
 			@RequestParam(value = "buildingType", required = false) List<String> buildingTypes,
-			@RequestBody BuildingRequest buildingRequest) {
+			@RequestBody BuildingSearchRequest buildingSearchRequest) {
 		List<BuildingSearchResponse> resutls = new ArrayList<>();
-		resutls = buildingService.findAll(requestParams, buildingTypes);
+		resutls = buildingService.findBuilding(requestParams, buildingTypes);
 		return resutls;
 	}
 
 	@PostMapping
-	public BuildingResponse insertBuilding(@RequestBody BuildingRequest buildingRequest) {
-		validation(buildingRequest);
-		BuildingResponse result = new BuildingResponse();
+	public BuildingUpdateRequest insertBuilding(@RequestBody BuildingUpdateRequest buildingRequest) {
+		BuildingValidator.validationCreate(buildingRequest);
+		BuildingUpdateResponse result = buildingService.save(buildingRequest);
+		return buildingRequest;
+	}
+
+	@PutMapping
+	public BuildingUpdateResponse updateBuilding(@RequestBody BuildingUpdateRequest buildingRequest) {
+		BuildingValidator.validationUpdate(buildingRequest);
+		BuildingUpdateResponse result = buildingService.save(buildingRequest);
 		return result;
 	}
 
-	public void validation(BuildingRequest buildingRequest) {
-		if (buildingRequest.getName() == null) {
-			throw new FieldNotFoundException("Name is requỉed");
-		}
+	@DeleteMapping
+	public void deleteBuilding(@RequestBody BuildingUpdateRequest updateRequest) {
+		buildingService.delete(updateRequest);
 	}
 
 	@GetMapping("/{buildingId}")
-	public BuildingResponse getBuildingDetail(@PathVariable("buildingId") Integer id) {
-		BuildingResponse resutl = new BuildingResponse();
+	public BuildingUpdateResponse getBuildingDetail(@PathVariable("buildingId") Integer id) {
+		BuildingUpdateResponse resutl = new BuildingUpdateResponse();
 		return resutl;
 	}
 
 	@PostMapping("/assignment")
-	public void assignmentBuilding(@RequestBody BuildingAssignmentRequest assignmentRequest) {
-		// logic
+	public Integer assignmentBuilding(@RequestBody UsersBuildingRequest request) {
+		buildingService.save(request);
+		return request.getBuildingId();
 	}
 
 }

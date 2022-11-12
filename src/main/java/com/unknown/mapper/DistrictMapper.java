@@ -3,6 +3,7 @@ package com.unknown.mapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.unknown.entity.CityEntity;
 import com.unknown.entity.DistrictEntity;
 
 public class DistrictMapper implements IRowMapper<DistrictEntity> {
@@ -13,7 +14,8 @@ public class DistrictMapper implements IRowMapper<DistrictEntity> {
 			districtEntity.setId(resultSet.getInt("id"));
 			districtEntity.setName(resultSet.getNString("name"));
 			districtEntity.setCode(resultSet.getString("code"));
-			districtEntity.setCityId(resultSet.getInt("cityId"));
+			districtEntity.setCityEntity(new CityEntity());
+			districtEntity.getCityEntity().setId(resultSet.getInt("cityId"));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

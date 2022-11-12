@@ -2,13 +2,15 @@ package com.unknown.model.response;
 
 public class AreaResponse {
 	private Integer id;
+	private Integer buildingId;
 	private Integer floor;
 	private String area;
-	private Integer status;
 	private Double price;
 	private Double deposit;
 	private Double decorateTime;
 	private String buildingName;
+	private Integer status;
+	private String statusString;
 
 	public Integer getId() {
 		return id;
@@ -16,6 +18,14 @@ public class AreaResponse {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public Integer getBuildingId() {
+		return buildingId;
+	}
+
+	public void setBuildingId(Integer buildingId) {
+		this.buildingId = buildingId;
 	}
 
 	public Integer getFloor() {
@@ -32,14 +42,6 @@ public class AreaResponse {
 
 	public void setArea(String area) {
 		this.area = area;
-	}
-
-	public Integer getStatus() {
-		return status;
-	}
-
-	public void setStatus(Integer status) {
-		this.status = status;
 	}
 
 	public Double getPrice() {
@@ -72,5 +74,21 @@ public class AreaResponse {
 
 	public void setBuildingName(String buildingName) {
 		this.buildingName = buildingName;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public String getStatusString() {
+		return statusString;
+	}
+
+	public void setStatusString(String statusString) {
+		this.statusString = statusString;
 	}
 }

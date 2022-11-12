@@ -2,95 +2,109 @@ package com.unknown.entity;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "Building")
 public class BuildingEntity {
+
 	@Id
+	@Column(name = "id", columnDefinition = "INT", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(name = "name", nullable = true)
+	@Column(name = "name", columnDefinition = "NVARCHAR(255)", nullable = false)
 	private String name;
 
-	@Column(name = "ward")
+	@Column(name = "ward", columnDefinition = "NVARCHAR(255)", nullable = true)
 	private String ward;
 
-	@Column(name = "street")
+	@Column(name = "street", columnDefinition = "NVARCHAR(255)", nullable = true)
 	private String street;
 
-	@Column(name = "structer")
+	@Column(name = "structer", columnDefinition = "NVARCHAR(255)", nullable = true)
 	private String structer;
 
-	@Column(name = "directions")
+	@Column(name = "directions", columnDefinition = "NVARCHAR(255)", nullable = true)
 	private String directions;
 
-	@Column(name = "numberOfBasement")
+	@Column(name = "number_of_basement", columnDefinition = "INT", nullable = true)
 	private Integer numberOfBasement;
 
-	@Column(name = "level")
+	@Column(name = "level", columnDefinition = "NVARCHAR(255)", nullable = true)
 	private String level;
 
-	@Column(name = "discribe")
+	@Column(name = "discribe", columnDefinition = "TEXT", nullable = true)
 	private String discribe;
 
-	@Column(name = "status", nullable = true)
+	@Column(name = "status", columnDefinition = "INT", nullable = false)
 	private Integer status;
 
-	@Column(name = "serviceFee")
+	@Column(name = "service_fee", columnDefinition = "FLOAT", nullable = true)
 	private Double serviceFee;
 
-	@Column(name = "carFee")
+	@Column(name = "car_fee", columnDefinition = "FLOAT", nullable = true)
 	private Double carFee;
 
-	@Column(name = "motobikeFee")
+	@Column(name = "motobike_fee", columnDefinition = "FLOAT", nullable = true)
 	private Double motobikeFee;
 
-	@Column(name = "overtimeFee")
+	@Column(name = "overtime_fee", columnDefinition = "FLOAT", nullable = true)
 	private Double overtimeFee;
 
-	@Column(name = "electricityBill")
+	@Column(name = "electricity_bill", columnDefinition = "FLOAT", nullable = true)
 	private Double electricityBill;
 
-	@Column(name = "payment")
-	private String payment;
-
-	@Column(name = "managerName")
-	private String managerName;
-
-	@Column(name = "managerPhoneNumber")
-	private String managerPhoneNumber;
-
-	@Column(name = "brokerFee")
+	@Column(name = "broker_fee", columnDefinition = "FLOAT", nullable = true)
 	private Double brokerFee;
 
-	@Column(name = "note")
+	@Column(name = "payment", columnDefinition = "NVARCHAR(255)", nullable = true)
+	private String payment;
+
+	@Column(name = "manager_name", columnDefinition = "NVARCHAR(255)", nullable = true)
+	private String managerName;
+
+	@Column(name = "manager_phone_number", columnDefinition = "VARCHAR(255)", nullable = true)
+	private String managerPhoneNumber;
+
+	@Column(name = "note", columnDefinition = "TEXT", nullable = true)
 	private String note;
 
-	@Column(name = "link")
+	@Column(name = "link", columnDefinition = "TEXT", nullable = true)
 	private String link;
 
-	@Column(name = "map")
+	@Column(name = "map", columnDefinition = "TEXT", nullable = true)
 	private String map;
 
-	@Column(name = "image")
+	@Column(name = "image", columnDefinition = "TEXT", nullable = true)
 	private String image;
 
-	@Column(name = "districtId")
-	private Integer districtId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "district_id", nullable = false)
+	private DistrictEntity districtEntity;
 
-	@Column(name = "buildingTypeId")
-	private Integer buildingTypeId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "building_type_id", nullable = false)
+	private BuildingTypeEntity buildingTypeEntity;
 
-	@OneToMany(mappedBy = "buildingEntity")
-	List<AreaEntity> areaEnties;
+	// 1 building có nhiều area
+	@OneToMany(mappedBy = "buildingEntity", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST,
+			CascadeType.MERGE }, orphanRemoval = true)
+	private List<AreaEntity> areaEnties;
+
+	@OneToMany(mappedBy = "buildingEntity", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST,
+			CascadeType.MERGE }, orphanRemoval = true)
+	private List<UsersBuildingEntity> usersBuildingEntities;
 
 	public Integer getId() {
 		return id;
@@ -212,6 +226,14 @@ public class BuildingEntity {
 		this.electricityBill = electricityBill;
 	}
 
+	public Double getBrokerFee() {
+		return brokerFee;
+	}
+
+	public void setBrokerFee(Double brokerFee) {
+		this.brokerFee = brokerFee;
+	}
+
 	public String getPayment() {
 		return payment;
 	}
@@ -234,14 +256,6 @@ public class BuildingEntity {
 
 	public void setManagerPhoneNumber(String managerPhoneNumber) {
 		this.managerPhoneNumber = managerPhoneNumber;
-	}
-
-	public Double getBrokerFee() {
-		return brokerFee;
-	}
-
-	public void setBrokerFee(Double brokerFee) {
-		this.brokerFee = brokerFee;
 	}
 
 	public String getNote() {
@@ -276,20 +290,20 @@ public class BuildingEntity {
 		this.image = image;
 	}
 
-	public Integer getDistrictId() {
-		return districtId;
+	public DistrictEntity getDistrictEntity() {
+		return districtEntity;
 	}
 
-	public void setDistrictId(Integer districtId) {
-		this.districtId = districtId;
+	public void setDistrictEntity(DistrictEntity districtEntity) {
+		this.districtEntity = districtEntity;
 	}
 
-	public Integer getBuildingTypeId() {
-		return buildingTypeId;
+	public BuildingTypeEntity getBuildingTypeEntity() {
+		return buildingTypeEntity;
 	}
 
-	public void setBuildingTypeId(Integer buildingTypeId) {
-		this.buildingTypeId = buildingTypeId;
+	public void setBuildingTypeEntity(BuildingTypeEntity buildingTypeEntity) {
+		this.buildingTypeEntity = buildingTypeEntity;
 	}
 
 	public List<AreaEntity> getAreaEnties() {
@@ -298,6 +312,14 @@ public class BuildingEntity {
 
 	public void setAreaEnties(List<AreaEntity> areaEnties) {
 		this.areaEnties = areaEnties;
+	}
+
+	public List<UsersBuildingEntity> getUsersBuildingEntities() {
+		return usersBuildingEntities;
+	}
+
+	public void setUsersBuildingEntities(List<UsersBuildingEntity> usersBuildingEntities) {
+		this.usersBuildingEntities = usersBuildingEntities;
 	}
 
 }

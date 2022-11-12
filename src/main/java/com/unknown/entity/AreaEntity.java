@@ -1,47 +1,55 @@
 package com.unknown.entity;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "Area")
 public class AreaEntity {
+
 	@Id
+	@Column(name = "id", columnDefinition = "INT", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(name = "floor")
+	@Column(name = "floor", columnDefinition = "INT", nullable = true)
 	private Integer floor;
 
-	@Column(name = "area", nullable = true)
+	@Column(name = "area", columnDefinition = "NVARCHAR(255)", nullable = true)
 	private String area;
 
-	@Column(name = "status", nullable = true)
+	@Column(name = "status", columnDefinition = "INT", nullable = true)
 	private Integer status;
 
-	@Column(name = "price")
+	@Column(name = "price", columnDefinition = "FLOAT", nullable = true)
 	private Double price;
 
-	@Column(name = "deposit")
+	@Column(name = "deposit", columnDefinition = "FLOAT", nullable = true)
 	private Double deposit;
 
-	@Column(name = "decorateTime")
+	@Column(name = "decorate_time", columnDefinition = "FLOAT", nullable = true)
 	private Double decorateTime;
 
-	@ManyToOne
-	@JoinColumn(name = "buildingId", nullable = true)
+	// Nhiều Area có chung 1 building nhưng mỗi record chỉ có 1 building
+	// hay 1 area chỉ có 1 building
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "building_id", nullable = false)
 	private BuildingEntity buildingEntity;
 
-	public AreaEntity() {
-		super();
-		this.setBuildingEntity(new BuildingEntity());
-	}
+	@OneToMany(mappedBy = "areaEntity", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST,
+			CascadeType.MERGE }, orphanRemoval = true)
+	private List<TransactionEntity> transactionEntities;
 
 	public Integer getId() {
 		return id;
@@ -107,11 +115,12 @@ public class AreaEntity {
 		this.buildingEntity = buildingEntity;
 	}
 
-	public Integer getBuildingId() {
-		return this.buildingEntity.getId();
+	public List<TransactionEntity> getTransactionEntities() {
+		return transactionEntities;
 	}
 
-	public void setBuildingId(Integer buildingId) {
-		this.buildingEntity.setId(buildingId);
+	public void setTransactionEntities(List<TransactionEntity> transactionEntities) {
+		this.transactionEntities = transactionEntities;
 	}
+
 }

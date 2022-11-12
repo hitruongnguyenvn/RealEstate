@@ -13,6 +13,7 @@ public class BuildingSearchResponse {
 	private String managerPhoneNumber;
 	private List<String> areaEmpty;
 	private List<String> floorEmpty;
+	private Boolean checkUserBuilding;
 
 	public BuildingSearchResponse() {
 		this.setAreaEmpty(new ArrayList<>());
@@ -89,5 +90,13 @@ public class BuildingSearchResponse {
 
 	public void setFloorEmpty(List<String> floorEmpty) {
 		this.floorEmpty = floorEmpty;
+	}
+
+	public Boolean getCheckUserBuilding() {
+		return checkUserBuilding;
+	}
+
+	public void setCheckUserBuilding(Boolean checkUserBuilding) {
+		this.checkUserBuilding = checkUserBuilding;
 	}
 }

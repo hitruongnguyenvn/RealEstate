@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.unknown.entity.BuildingEntity;
+import com.unknown.entity.BuildingTypeEntity;
+import com.unknown.entity.DistrictEntity;
 
 public class BuildingMapper implements IRowMapper<BuildingEntity> {
 
@@ -20,8 +22,10 @@ public class BuildingMapper implements IRowMapper<BuildingEntity> {
 			buildingEntity.setStatus(resultSet.getInt("status"));
 			buildingEntity.setManagerName(resultSet.getNString("managerName"));
 			buildingEntity.setManagerPhoneNumber(resultSet.getNString("managerPhoneNumber"));
-			buildingEntity.setDistrictId(resultSet.getInt("districtId"));
-			buildingEntity.setBuildingTypeId(resultSet.getInt("buildingTypeId"));
+			buildingEntity.setDistrictEntity(new DistrictEntity());
+			buildingEntity.getDistrictEntity().setId(resultSet.getInt("districtId"));
+			buildingEntity.setBuildingTypeEntity(new BuildingTypeEntity());
+			buildingEntity.getBuildingTypeEntity().setId(resultSet.getInt("buildingTypeId"));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
